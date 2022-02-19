@@ -20,12 +20,25 @@ public class DriveSubsystem extends SubsystemBase {
         backLeft = new CANSparkMax(11, MotorType.kBrushless); 
         backRight = new CANSparkMax(55, MotorType.kBrushless);
 
+        frontRight.setInverted(true);
+        backRight.setInverted(true);
+
         m_robotDrive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
 
     }
 
-    public void drive(Double x, Double y, Double z){
-        m_robotDrive.driveCartesian(-y, x, z);
-        m_robotDrive.drivePolar(-y, x, z);
+    public void drive(Double x, Double y, Double z) {
+        drive(x, y, z, 0.0);
+    }
+    //Field-Oriented Driving: Using the gyro, forward is always forward, regardless of
+    //the robot's orientation
+    public void drive(Double x, Double y, Double z, Double gyroAngle){
+        m_robotDrive.driveCartesian(-y, x, z, gyroAngle);
+        // m_robotDrive.drivePolar(-y, x, z);
+    }
+
+    //Default rotate should be to the right
+    public void rotate(Double speed) {
+        //TODO: whatever logic needed for the robot to rotate to the right
     }
 }
