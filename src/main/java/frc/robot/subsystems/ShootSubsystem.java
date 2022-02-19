@@ -14,6 +14,8 @@ public class ShootSubsystem extends SubsystemBase{
         shoot = new WPI_TalonSRX(7);
     }
 
+    //For this one, you might want two sets of functions, A start and stop for the uptake
+    //and a start and stop for the shoot
     public void start(Double x){
         
     
