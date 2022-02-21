@@ -9,9 +9,14 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.commands.JoystickDriveCommand.JoystickDriveConfig;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.util.SmartDashboardKeys;
 
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
@@ -22,17 +27,23 @@ public class Robot extends TimedRobot {
 
   private ADXRS450_Gyro gyro;
   private DriveSubsystem driveSubsystem;
+  private SpeedController speedController;
   private Joystick m_stick;
 
   @Override
   public void robotInit() {
     gyro = new ADXRS450_Gyro();
+    gyro.reset();
     m_stick = new Joystick(OI.DRIVE_PORT);
     
     driveSubsystem = new DriveSubsystem();
     
-    JoystickDriveConfig jCfg = new JoystickDriveConfig(m_stick, driveSubsystem);
+    JoystickDriveConfig jCfg = new JoystickDriveConfig(m_stick, driveSubsystem, gyro);
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(jCfg));
+
+    speedController = new SpeedController(2.0, new JoystickButton(m_stick, OI.BUTTON_10),
+      new JoystickButton(m_stick, OI.BUTTON_5), new JoystickButton(m_stick, OI.BUTTON_7),
+      new JoystickButton(m_stick, OI.BUTTON_6), new JoystickButton(m_stick, OI.BUTTON_8));
     
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
@@ -40,7 +51,10 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    SmartDashboard.putNumber(SmartDashboardKeys.GYRO_VAL, gyro.getAngle());
+    CommandScheduler.getInstance().run();
+  }
 
   @Override
   public void autonomousInit() {
@@ -63,7 +77,10 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    gyro.reset();
+    speedController.reset();
+  }
 
   @Override
   public void teleopPeriodic() {
