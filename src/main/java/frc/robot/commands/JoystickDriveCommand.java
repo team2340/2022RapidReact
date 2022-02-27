@@ -1,44 +1,44 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.util.SmartDashboardKeys;
 
 public class JoystickDriveCommand extends CommandBase{
     public static class JoystickDriveConfig {
-        protected Joystick joystick;
         protected DriveSubsystem drive;
-        ADXRS450_Gyro gyro;
+        DoubleSupplier x;
+        DoubleSupplier y;
+        DoubleSupplier z;
+        DoubleSupplier gyro;
 
-        public JoystickDriveConfig(Joystick jStick, DriveSubsystem dSubsystem, ADXRS450_Gyro gro){
-            joystick = jStick;
-            gyro = gro;
-            drive = dSubsystem;
+        public JoystickDriveConfig(DriveSubsystem drive,
+          DoubleSupplier x, DoubleSupplier y,
+          DoubleSupplier z, DoubleSupplier gyro){
+            this.drive = drive;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.gyro = gyro;
         }
     }
 
-    JoystickDriveConfig joystickDriveConfig;
+    JoystickDriveConfig cfg;
 
     public JoystickDriveCommand(JoystickDriveConfig jdConfig) {
-        joystickDriveConfig = jdConfig;
-        addRequirements(joystickDriveConfig.drive);
+        cfg = jdConfig;
+        addRequirements(cfg.drive);
     }
 
     @Override
     public void initialize() {
-        
     }
 
     @Override
     public void execute() {
-        Double speedCtrlVal = SmartDashboard.getNumber(SmartDashboardKeys.DRIVE_SPEED_CTRL, 1);
-        Double x = joystickDriveConfig.joystick.getX() / speedCtrlVal;
-        Double y = joystickDriveConfig.joystick.getY() / speedCtrlVal;
-        Double z = joystickDriveConfig.joystick.getZ() / speedCtrlVal;
-        joystickDriveConfig.drive.drive(x, y, z, joystickDriveConfig.gyro.getAngle());
+        cfg.drive.drive(cfg.x.getAsDouble(), cfg.y.getAsDouble(), 
+                        cfg.z.getAsDouble(), cfg.gyro.getAsDouble());
     }
 
     @Override

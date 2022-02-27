@@ -1,0 +1,59 @@
+{
+  "HALProvider": {
+    "Other Devices": {
+      "ADXRS450[0]": {
+        "header": {
+          "open": true
+        }
+      },
+      "SPARK MAX [11]": {
+        "header": {
+          "open": true
+        }
+      },
+      "SPARK MAX [12]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/AcquisitionSubsystem": "Subsystem",
+      "/LiveWindow/ClimbSubsystem": "Subsystem",
+      "/LiveWindow/DriveSubsystem": "Subsystem",
+      "/LiveWindow/ShootSubsystem": "Subsystem",
+      "/LiveWindow/Ungrouped/ADXRS450_Gyro[0]": "Gyro",
+      "/LiveWindow/Ungrouped/MecanumDrive[1]": "MecanumDrive",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Talon SRX [6]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon SRX [8]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon SRX [9]": "Motor Controller",
+      "/SmartDashboard/Auto choices": "String Chooser"
+    }
+  },
+  "NetworkTables": {
+    "LiveWindow": {
+      "AcquisitionSubsystem": {
+        "open": true
+      },
+      "ClimbSubsystem": {
+        "open": true
+      },
+      "Ungrouped": {
+        "Talon SRX [6]": {
+          "open": true
+        },
+        "Talon SRX [8]": {
+          "open": true
+        },
+        "Talon SRX [9]": {
+          "open": true
+        }
+      },
+      "open": true
+    }
+  }
+}

@@ -1,25 +1,26 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Joystick;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.AcquisitionSubsystem;
 
 public class AcquisitionMotionCommand extends CommandBase{
     public static class AcquisitionMotionConfig {
-        protected Joystick joystick;
+        DoubleSupplier motion;
         protected AcquisitionSubsystem acquisition;
 
-        public AcquisitionMotionConfig(Joystick joy, AcquisitionSubsystem acqSubsystem){
-            joystick = joy;
+        public AcquisitionMotionConfig(DoubleSupplier motionFunction, AcquisitionSubsystem acqSubsystem){
+            motion = motionFunction;
             acquisition = acqSubsystem;
         }
     }
 
-    AcquisitionMotionConfig acqMotionConfig;
+    AcquisitionMotionConfig cfg;
 
-    public AcquisitionMotionCommand(AcquisitionMotionConfig sConfig) {
-        acqMotionConfig = sConfig;
-        addRequirements(acqMotionConfig.acquisition);
+    public AcquisitionMotionCommand(AcquisitionMotionConfig cfg) {
+        this.cfg = cfg;
+        addRequirements(cfg.acquisition);
     }
 
     @Override
@@ -29,7 +30,7 @@ public class AcquisitionMotionCommand extends CommandBase{
 
     @Override
     public void execute() {
-        acqMotionConfig.acquisition.motion(-acqMotionConfig.joystick.getY());
+        cfg.acquisition.motion(cfg.motion.getAsDouble());
     }
 
     @Override
@@ -39,6 +40,6 @@ public class AcquisitionMotionCommand extends CommandBase{
 
     @Override
     public void end(boolean interrupted) {
-        acqMotionConfig.acquisition.motion(0.);
+        cfg.acquisition.motion(0.);
     }
 }

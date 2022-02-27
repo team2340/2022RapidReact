@@ -1,16 +1,17 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Joystick;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ClimbSubsystem;
 
 public class ClimbCommand extends CommandBase{
     public static class ClimbConfig {
-        protected Joystick joystick;
+        protected DoubleSupplier move;
         protected ClimbSubsystem climb;
 
-        public ClimbConfig(Joystick joy, ClimbSubsystem climbSubsystem){
-            joystick = joy;
+        public ClimbConfig(DoubleSupplier moveFunction, ClimbSubsystem climbSubsystem){
+            move = moveFunction;
             climb = climbSubsystem;
         }
     }
@@ -29,7 +30,7 @@ public class ClimbCommand extends CommandBase{
 
     @Override
     public void execute() {
-        climbConfig.climb.move(-climbConfig.joystick.getTwist());
+        climbConfig.climb.move(climbConfig.move.getAsDouble());
     }
 
     @Override
