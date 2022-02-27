@@ -34,8 +34,7 @@ public class JoystickDriveCommand extends CommandBase{
 
     @Override
     public void execute() {
-        //TODO: speed control?
-        Double speedCtrlVal = SmartDashboard.getNumber(SmartDashboardKeys.SPEED_CTRL, 1);
+        Double speedCtrlVal = SmartDashboard.getNumber(SmartDashboardKeys.DRIVE_SPEED_CTRL, 1);
         Double x = joystickDriveConfig.joystick.getX() / speedCtrlVal;
         Double y = joystickDriveConfig.joystick.getY() / speedCtrlVal;
         Double z = joystickDriveConfig.joystick.getZ() / speedCtrlVal;

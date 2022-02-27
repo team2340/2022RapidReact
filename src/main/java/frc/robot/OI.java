@@ -20,17 +20,18 @@ public class OI {
 /*CAN IDs*/
     /*Talon IDs*/
     //Wheels
-    public static final int FRONT_LEFT_WHEEL_TAL_ID = 2;
-    public static final int BACK_LEFT_WHEEL_TAL_ID = 3;
-    public static final int FRONT_RIGHT_WHEEL_TAL_ID = 4;
-    public static final int BACK_RIGHT_WHEEL_TAL_ID = 5;
+    public static final int FRONT_LEFT_WHEEL_CTRL_ID = 2;
+    public static final int BACK_LEFT_WHEEL_CTRL_ID = 3;
+    public static final int FRONT_RIGHT_WHEEL_CTRL_ID = 4;
+    public static final int BACK_RIGHT_WHEEL_CTRL_ID = 5;
     //Climb
-    public static final int CLIMB_TAL_ID = 6;
-    //Shoot
-    public static final int SHOOT_TAL_ID = 7;
+    public static final int CLIMB_CTRL_ID = 6;
     //Acquisition
-    public static final int ACQ_TAL_ID = 8;
+    public static final int ACQ_WHEEL_CTRL_ID = 8;
+    public static final int ACQ_MOTION_CTRL_ID = 9;
 
     /*SparkMAX IDs*/
-    public static final int UPTAKE_SM_ID = 9;
+    //Shoot
+    public static final int SHOOT_CTRL_ID = 11;
+    public static final int UPTAKE_CTRL_ID = 12;
 }

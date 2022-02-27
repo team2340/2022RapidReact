@@ -3,24 +3,57 @@ package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.util.SmartDashboardKeys;
 
 public class SpeedController {
-    private static final Double SLOWEST_SPEED = 4.0;
-    private static final Double FASTEST_SPEED = 1.0;
-    private Double defaultSpeed = 1.0;
+    public static class SpeedControllerConfig {
+        private static final Double SLOWEST_SPEED = 4.0;
+        private static final Double FASTEST_SPEED = 1.0;
+        
+        String key;
+        Double defSpeed;
+        JoystickButton setDefault;
+        JoystickButton slowIncr;
+        JoystickButton slowInst;
+        JoystickButton fastIncr;
+        JoystickButton fastInst;
+        Double slowestSpeed;
+        Double fastestSpeed;
 
-    public SpeedController(Double defSpeed, JoystickButton setDefault,
-    JoystickButton slowIncr, JoystickButton slowInst,
-    JoystickButton fastIncr, JoystickButton fastInst) {
-        defaultSpeed = defSpeed;
+        public SpeedControllerConfig(String key, Double defSpeed, JoystickButton setDefault,
+            JoystickButton slowIncr, JoystickButton slowInst,
+            JoystickButton fastIncr, JoystickButton fastInst)
+        {
+            this(key, defSpeed, setDefault, slowIncr, slowInst, fastIncr, fastInst,
+                SLOWEST_SPEED, FASTEST_SPEED);
+        }
 
-        SmartDashboard.putNumber(SmartDashboardKeys.SPEED_CTRL, defaultSpeed);
+        public SpeedControllerConfig(String key, Double defSpeed, JoystickButton setDefault,
+            JoystickButton slowIncr, JoystickButton slowInst,
+            JoystickButton fastIncr, JoystickButton fastInst,
+            Double slowestSpeed, Double fastestSpeed)
+        {
+            this.key = key;
+            this.defSpeed = defSpeed;
+            this.setDefault = setDefault;
+            this.slowIncr = slowIncr;
+            this.slowInst = slowInst;
+            this.fastIncr = fastIncr;
+            this.fastInst = fastInst;
+            this.slowestSpeed = slowestSpeed;
+            this.fastestSpeed = fastestSpeed;
+        }    
+    }
 
-        setDefault.whenPressed(new CommandBase() {
+    SpeedControllerConfig cfg;
+
+    public SpeedController(SpeedControllerConfig config) {
+        cfg = config;
+        SmartDashboard.putNumber(cfg.key, cfg.defSpeed);
+
+        cfg.setDefault.whenPressed(new CommandBase() {
             @Override
             public void initialize() {
-                SmartDashboard.putNumber(SmartDashboardKeys.SPEED_CTRL, defaultSpeed);
+                SmartDashboard.putNumber(cfg.key, cfg.defSpeed);
             }
 
             @Override
@@ -29,12 +62,12 @@ public class SpeedController {
             }
         });
     
-        slowIncr.whenPressed(new CommandBase() {
+        cfg.slowIncr.whenPressed(new CommandBase() {
             @Override
             public void initialize() {
-                Double speedCtrlVal = SmartDashboard.getNumber(SmartDashboardKeys.SPEED_CTRL, defaultSpeed);
-                speedCtrlVal = Math.min(speedCtrlVal + 0.2, SLOWEST_SPEED);
-                SmartDashboard.putNumber(SmartDashboardKeys.SPEED_CTRL, speedCtrlVal);
+                Double speedCtrlVal = SmartDashboard.getNumber(cfg.key, cfg.defSpeed);
+                speedCtrlVal = Math.min(speedCtrlVal + 0.2, cfg.slowestSpeed);
+                SmartDashboard.putNumber(cfg.key, speedCtrlVal);
             }
 
             @Override
@@ -44,12 +77,12 @@ public class SpeedController {
         });
 
         
-        fastIncr.whenPressed(new CommandBase() {
+        cfg.fastIncr.whenPressed(new CommandBase() {
             @Override
             public void initialize() {
-                Double speedCtrlVal = SmartDashboard.getNumber(SmartDashboardKeys.SPEED_CTRL, defaultSpeed);
-                speedCtrlVal = Math.max(speedCtrlVal - 0.2, FASTEST_SPEED);
-                SmartDashboard.putNumber(SmartDashboardKeys.SPEED_CTRL, speedCtrlVal);
+                Double speedCtrlVal = SmartDashboard.getNumber(cfg.key, cfg.defSpeed);
+                speedCtrlVal = Math.max(speedCtrlVal - 0.2, cfg.fastestSpeed);
+                SmartDashboard.putNumber(cfg.key, speedCtrlVal);
             }
 
             @Override
@@ -58,10 +91,10 @@ public class SpeedController {
             }
         });
         
-        slowInst.whenPressed(new CommandBase() {
+        cfg.slowInst.whenPressed(new CommandBase() {
             @Override
             public void initialize() {
-                SmartDashboard.putNumber(SmartDashboardKeys.SPEED_CTRL, SLOWEST_SPEED);
+                SmartDashboard.putNumber(cfg.key, cfg.slowestSpeed);
             }
 
             @Override
@@ -70,10 +103,10 @@ public class SpeedController {
             }
         });
 
-        fastInst.whenPressed(new CommandBase() {
+        cfg.fastInst.whenPressed(new CommandBase() {
             @Override
             public void initialize() {
-                SmartDashboard.putNumber(SmartDashboardKeys.SPEED_CTRL, FASTEST_SPEED);
+                SmartDashboard.putNumber(cfg.key, cfg.fastestSpeed);
             }
 
             @Override
@@ -84,6 +117,6 @@ public class SpeedController {
     }
     
     public void reset() {
-        SmartDashboard.putNumber(SmartDashboardKeys.SPEED_CTRL, defaultSpeed);
+        SmartDashboard.putNumber(cfg.key, cfg.defSpeed);
     }
 }
