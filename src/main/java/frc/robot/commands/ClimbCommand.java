@@ -2,24 +2,24 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.AcquisitionSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 
 public class ClimbCommand extends CommandBase{
     public static class ClimbConfig {
         protected Joystick joystick;
-        protected AcquisitionSubsystem acquisition;
+        protected ClimbSubsystem climb;
 
-        public ClimbConfig(Joystick joy, AcquisitionSubsystem acqSubsystem){
+        public ClimbConfig(Joystick joy, ClimbSubsystem climbSubsystem){
             joystick = joy;
-            acquisition = acqSubsystem;
+            climb = climbSubsystem;
         }
     }
 
-    ClimbConfig acqMotionConfig;
+    ClimbConfig climbConfig;
 
-    public ClimbCommand(ClimbConfig sConfig) {
-        acqMotionConfig = sConfig;
-        addRequirements(acqMotionConfig.acquisition);
+    public ClimbCommand(ClimbConfig cConfig) {
+        climbConfig = cConfig;
+        addRequirements(climbConfig.climb);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class ClimbCommand extends CommandBase{
 
     @Override
     public void execute() {
-        acqMotionConfig.acquisition.motion(-acqMotionConfig.joystick.getTwist());
+        climbConfig.climb.move(-climbConfig.joystick.getTwist());
     }
 
     @Override
@@ -39,6 +39,6 @@ public class ClimbCommand extends CommandBase{
 
     @Override
     public void end(boolean interrupted) {
-        acqMotionConfig.acquisition.motion(0.);
+        climbConfig.climb.move(0.);
     }
 }

@@ -10,7 +10,7 @@ public class ClimbSubsystem extends SubsystemBase{
         lift = new WPI_TalonSRX(OI.CLIMB_CTRL_ID);
     }
 
-    public void start(Double val){
+    public void move(Double val){
         lift.set(val);
     }
 }

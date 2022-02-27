@@ -9,22 +9,24 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.SpeedController.SpeedControllerConfig;
 import frc.robot.commands.AcquisitionMotionCommand;
 import frc.robot.commands.AcquisitionWheelsCommand;
+import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.AcquisitionMotionCommand.AcquisitionMotionConfig;
 import frc.robot.commands.AcquisitionWheelsCommand.AcquisitionWheelsConfig;
+import frc.robot.commands.ClimbCommand.ClimbConfig;
 import frc.robot.commands.JoystickDriveCommand.JoystickDriveConfig;
 import frc.robot.commands.ShooterCommand.ShooterConfig;
 import frc.robot.subsystems.AcquisitionSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShootSubsystem;
+import frc.robot.util.AxisButton;
 import frc.robot.util.SmartDashboardKeys;
 
 public class Robot extends TimedRobot {
@@ -33,11 +35,11 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-
   private ADXRS450_Gyro gyro;
   private DriveSubsystem driveSubsystem;
   private ShootSubsystem shootSubsystem;
   private AcquisitionSubsystem acquisitionSubsystem;
+  private ClimbSubsystem climbSubsystem;
 
   private SpeedController driveSpeedController, acqSpeedController;
 
@@ -54,6 +56,7 @@ public class Robot extends TimedRobot {
     driveSubsystem = new DriveSubsystem();
     shootSubsystem = new ShootSubsystem();
     acquisitionSubsystem = new AcquisitionSubsystem();
+    climbSubsystem = new ClimbSubsystem();
     
     //Drive Controller
     JoystickDriveConfig jCfg = new JoystickDriveConfig(m_stick, driveSubsystem, gyro);
@@ -79,15 +82,17 @@ public class Robot extends TimedRobot {
     //Arm Wheels
     JoystickButton acqWheelButton = new JoystickButton(a_stick, OI.BUTTON_3);
     AcquisitionWheelsConfig awCfg = new AcquisitionWheelsConfig(acquisitionSubsystem);
-    acqWheelButton.whileHeld(new AcquisitionWheelsCommand(awCfg));
+    acqWheelButton.whenHeld(new AcquisitionWheelsCommand(awCfg));
     
     //Shooting (Uptake and Shooter in 1 command)
     JoystickButton shootButton = new JoystickButton(a_stick, OI.BUTTON_4);
     ShooterConfig sCfg = new ShooterConfig(shootSubsystem);
-    shootButton.whileHeld(new ShooterCommand(sCfg));
+    shootButton.whenHeld(new ShooterCommand(sCfg));
 
     //Climbing
-    
+    AxisButton climbButton = new AxisButton(a_stick, a_stick.getTwistChannel());
+    ClimbConfig cCfg = new ClimbConfig(a_stick, climbSubsystem);
+    climbButton.whenHeld(new ClimbCommand(cCfg));
     
     //Autonomous Stuff
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
