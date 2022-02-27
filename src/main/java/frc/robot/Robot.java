@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AcquisitionMotionCommand;
 import frc.robot.commands.AcquisitionWheelsCommand;
+import frc.robot.commands.CameraCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.commands.ShooterCommand;
@@ -22,10 +23,10 @@ import frc.robot.commands.ClimbCommand.ClimbConfig;
 import frc.robot.commands.JoystickDriveCommand.JoystickDriveConfig;
 import frc.robot.commands.ShooterCommand.ShooterConfig;
 import frc.robot.subsystems.AcquisitionSubsystem;
+import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShootSubsystem;
-import frc.robot.util.AxisButton;
 import frc.robot.util.SmartDashboardKeys;
 import frc.robot.util.SpeedController;
 import frc.robot.util.SpeedController.SpeedControllerConfig;
@@ -41,6 +42,7 @@ public class Robot extends TimedRobot {
   private ShootSubsystem shootSubsystem;
   private AcquisitionSubsystem acquisitionSubsystem;
   private ClimbSubsystem climbSubsystem;
+  private CameraSubsystem cameraSubsystem;
 
   private SpeedController driveSpeedController, acqSpeedController;
 
@@ -58,6 +60,7 @@ public class Robot extends TimedRobot {
     shootSubsystem = new ShootSubsystem();
     acquisitionSubsystem = new AcquisitionSubsystem();
     climbSubsystem = new ClimbSubsystem();
+    cameraSubsystem = new CameraSubsystem();
     
     //Drive Controller
     driveSpeedController = new SpeedController(new SpeedControllerConfig(
@@ -81,6 +84,9 @@ public class Robot extends TimedRobot {
       },
       () -> gyro.getAngle());
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(jCfg));
+
+    JoystickButton cameraButton = new JoystickButton(m_stick, OI.BUTTON_9);
+    cameraButton.whenPressed(new CameraCommand(cameraSubsystem));
 
     //Acquisition Controller
     //Arm Motion
@@ -110,8 +116,6 @@ public class Robot extends TimedRobot {
     //Climbing
     ClimbConfig cCfg = new ClimbConfig(() -> -a_stick.getThrottle(), climbSubsystem);
     climbSubsystem.setDefaultCommand(new ClimbCommand(cCfg));
-    // AxisButton climbButton = new AxisButton(a_stick, a_stick.getThrottleChannel());
-    // climbButton.whenHeld(new ClimbCommand(cCfg));
     
     //Autonomous Stuff
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);

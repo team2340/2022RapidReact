@@ -22,6 +22,7 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/AcquisitionSubsystem": "Subsystem",
+      "/LiveWindow/CameraSubsystem": "Subsystem",
       "/LiveWindow/ClimbSubsystem": "Subsystem",
       "/LiveWindow/DriveSubsystem": "Subsystem",
       "/LiveWindow/ShootSubsystem": "Subsystem",
@@ -36,10 +37,7 @@
   },
   "NetworkTables": {
     "LiveWindow": {
-      "AcquisitionSubsystem": {
-        "open": true
-      },
-      "ClimbSubsystem": {
+      "CameraSubsystem": {
         "open": true
       },
       "Ungrouped": {
