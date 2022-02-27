@@ -18,10 +18,10 @@ public class DriveSubsystem extends SubsystemBase {
     private MecanumDrive m_robotDrive;
 
     public DriveSubsystem() {
-        frontLeft = new WPI_TalonSRX(OI.FRONT_LEFT_WHEEL_TAL_ID);
-        frontRight = new WPI_TalonSRX(OI.FRONT_RIGHT_WHEEL_TAL_ID);
-        backLeft = new WPI_TalonSRX(OI.BACK_LEFT_WHEEL_TAL_ID);
-        backRight = new WPI_TalonSRX(OI.BACK_RIGHT_WHEEL_TAL_ID);
+        frontLeft = new WPI_TalonSRX(OI.FRONT_LEFT_WHEEL_CTRL_ID);
+        frontRight = new WPI_TalonSRX(OI.FRONT_RIGHT_WHEEL_CTRL_ID);
+        backLeft = new WPI_TalonSRX(OI.BACK_LEFT_WHEEL_CTRL_ID);
+        backRight = new WPI_TalonSRX(OI.BACK_RIGHT_WHEEL_CTRL_ID);
 
         frontRight.setInverted(true);
         backRight.setInverted(true);
