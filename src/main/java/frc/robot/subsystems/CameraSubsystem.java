@@ -9,10 +9,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class CameraSubsystem extends SubsystemBase {
     ArrayList<UsbCamera> cameras;
 
-    public CameraSubsystem() {
+    public CameraSubsystem(int numCameras) {
         cameras = new ArrayList<>();
-        cameras.add(CameraServer.startAutomaticCapture(cameras.size())); //id 0
-        cameras.add(CameraServer.startAutomaticCapture(cameras.size())); //id 1
+        for(int i = 0; i < numCameras; ++i) {
+            cameras.add(CameraServer.startAutomaticCapture(i));
+        }
     }
 
     public ArrayList<UsbCamera> getCameras() {

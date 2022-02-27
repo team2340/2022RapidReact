@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
     shootSubsystem = new ShootSubsystem();
     acquisitionSubsystem = new AcquisitionSubsystem();
     climbSubsystem = new ClimbSubsystem();
-    cameraSubsystem = new CameraSubsystem();
+    cameraSubsystem = new CameraSubsystem(2);
     
     //Drive Controller
     driveSpeedController = new SpeedController(new SpeedControllerConfig(
