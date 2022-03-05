@@ -3,29 +3,29 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ShootSubsystem;
+import frc.robot.subsystems.UptakeSubsystem;
 
-public class ShooterCommand extends CommandBase{
-    public static class ShooterConfig {
-        protected ShootSubsystem shoot;
+public class UptakeCommand extends CommandBase{
+    public static class UptakeConfig {
+        protected UptakeSubsystem uptake;
         DoubleSupplier motion;
 
-        public ShooterConfig(ShootSubsystem sSubsystem, DoubleSupplier _motion){
-            shoot = sSubsystem;
+        public UptakeConfig(UptakeSubsystem subsystem, DoubleSupplier _motion){
+            uptake = subsystem;
             motion = _motion;
         }
     }
 
-    ShooterConfig cfg;
+    UptakeConfig cfg;
 
-    public ShooterCommand(ShooterConfig config) {
+    public UptakeCommand(UptakeConfig config) {
         cfg = config;
-        addRequirements(cfg.shoot);
+        addRequirements(cfg.uptake);
     }
 
     @Override
     public void initialize() {
-        cfg.shoot.move(cfg.motion.getAsDouble());
+        cfg.uptake.move(cfg.motion.getAsDouble());
     }
 
     @Override
@@ -39,6 +39,6 @@ public class ShooterCommand extends CommandBase{
 
     @Override
     public void end(boolean interrupted) {
-        cfg.shoot.move(0.);
+        cfg.uptake.move(0.);
     }
 }

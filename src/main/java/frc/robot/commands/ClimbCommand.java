@@ -10,7 +10,7 @@ public class ClimbCommand extends CommandBase{
         protected DoubleSupplier move;
         protected ClimbSubsystem climb;
 
-        public ClimbConfig(DoubleSupplier moveFunction, ClimbSubsystem climbSubsystem){
+        public ClimbConfig(ClimbSubsystem climbSubsystem, DoubleSupplier moveFunction){
             move = moveFunction;
             climb = climbSubsystem;
         }

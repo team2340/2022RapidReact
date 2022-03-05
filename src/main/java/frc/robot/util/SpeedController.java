@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class SpeedController {
+    private static final Double INCREMENT_AMOUNT = 0.2;
     public static class SpeedControllerConfig {
         private static final Double SLOWEST_SPEED = 4.0;
         private static final Double FASTEST_SPEED = 1.0;
@@ -66,7 +67,7 @@ public class SpeedController {
             @Override
             public void initialize() {
                 Double speedCtrlVal = SmartDashboard.getNumber(cfg.key, cfg.defSpeed);
-                speedCtrlVal = Math.min(speedCtrlVal + 0.2, cfg.slowestSpeed);
+                speedCtrlVal = Math.min(speedCtrlVal + INCREMENT_AMOUNT, cfg.slowestSpeed);
                 SmartDashboard.putNumber(cfg.key, speedCtrlVal);
             }
 
@@ -81,7 +82,7 @@ public class SpeedController {
             @Override
             public void initialize() {
                 Double speedCtrlVal = SmartDashboard.getNumber(cfg.key, cfg.defSpeed);
-                speedCtrlVal = Math.max(speedCtrlVal - 0.2, cfg.fastestSpeed);
+                speedCtrlVal = Math.max(speedCtrlVal - INCREMENT_AMOUNT, cfg.fastestSpeed);
                 SmartDashboard.putNumber(cfg.key, speedCtrlVal);
             }
 

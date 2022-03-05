@@ -10,7 +10,7 @@ public class AcquisitionMotionCommand extends CommandBase{
         DoubleSupplier motion;
         protected AcquisitionSubsystem acquisition;
 
-        public AcquisitionMotionConfig(DoubleSupplier motionFunction, AcquisitionSubsystem acqSubsystem){
+        public AcquisitionMotionConfig(AcquisitionSubsystem acqSubsystem, DoubleSupplier motionFunction){
             motion = motionFunction;
             acquisition = acqSubsystem;
         }
