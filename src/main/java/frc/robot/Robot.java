@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AcquisitionMotionCommand;
@@ -48,10 +49,17 @@ public class Robot extends TimedRobot {
   private UptakeSubsystem uptakeSubsystem;
   private CameraSubsystem cameraSubsystem;
 
-  private SpeedController driveSpeedController;//, acqSpeedController;
+  private SpeedController driveSpeedController, shootSpeedController;
 
   public static Joystick m_stick;
   private Joystick a_stick;
+
+  public JoystickButton createButton(Joystick stick, int buttonNumber, String useCase)
+  {
+    String whichButton = "Controller " + stick.getPort() + " - Button " + buttonNumber;
+    SmartDashboard.putString(whichButton, useCase);
+    return new JoystickButton(stick, buttonNumber);
+  }
 
   @Override
   public void robotInit() {
@@ -69,9 +77,9 @@ public class Robot extends TimedRobot {
     
     //Drive Controller
     driveSpeedController = new SpeedController(new SpeedControllerConfig(
-      SmartDashboardKeys.DRIVE_SPEED_CTRL, 2.0, new JoystickButton(m_stick, OI.BUTTON_10),
-      new JoystickButton(m_stick, OI.BUTTON_5), new JoystickButton(m_stick, OI.BUTTON_7),
-      new JoystickButton(m_stick, OI.BUTTON_6), new JoystickButton(m_stick, OI.BUTTON_8)));
+      SmartDashboardKeys.DRIVE_SPEED_CTRL, 2.0, createButton(m_stick, OI.BUTTON_10, "Drive Default Speed"),
+      createButton(m_stick, OI.BUTTON_5, "Drive Speed Slow"), createButton(m_stick, OI.BUTTON_7, "Drive Speed Full Slow"),
+      createButton(m_stick, OI.BUTTON_6, "Drive Speed Full"), createButton(m_stick, OI.BUTTON_8, "Drive Speed Full Fast")));
 
     JoystickDriveConfig jCfg = new JoystickDriveConfig(
       driveSubsystem,
@@ -90,15 +98,19 @@ public class Robot extends TimedRobot {
       () -> gyro.getAngle());
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(jCfg));
 
-    // JoystickButton cameraButton = new JoystickButton(m_stick, OI.BUTTON_9);
+    // JoystickButton cameraButton = createButton(m_stick, OI.BUTTON_4, "Camera Toggle");
     // cameraButton.whenPressed(new CameraCommand(cameraSubsystem));
+
+    JoystickButton gyroButton = createButton(m_stick, OI.BUTTON_9, "Gyro Reset");
+    gyroButton.whenPressed(new CommandBase() {
+      @Override
+      public void initialize() {
+        gyro.reset();
+      }
+    });
 
     //Acquisition Controller
     //Arm Motion
-    // acqSpeedController = new SpeedController(new SpeedControllerConfig(
-    //   SmartDashboardKeys.ACQ_SPEED_CTRL, 2.0, new JoystickButton(a_stick, OI.BUTTON_10),
-    //   new JoystickButton(a_stick, OI.BUTTON_5), new JoystickButton(a_stick, OI.BUTTON_7),
-    //   new JoystickButton(a_stick, OI.BUTTON_6), new JoystickButton(a_stick, OI.BUTTON_8)));
 
     AcquisitionMotionConfig amCfg = new AcquisitionMotionConfig(
       acquisitionSubsystem,
@@ -109,18 +121,31 @@ public class Robot extends TimedRobot {
     acquisitionSubsystem.setDefaultCommand(new AcquisitionMotionCommand(amCfg));
 
     //Arm Wheels
-    JoystickButton acqWheelButton = new JoystickButton(a_stick, OI.BUTTON_3);
+    JoystickButton acqWheelButton = createButton(a_stick, OI.BUTTON_1, "Arm Wheel Forward");
     AcquisitionWheelsConfig awCfg = new AcquisitionWheelsConfig(acquisitionSubsystem, () -> 1.0);
     acqWheelButton.whenHeld(new AcquisitionWheelsCommand(awCfg));
     
+    JoystickButton acqWheelRevButton = createButton(a_stick, OI.BUTTON_2, "Arm Wheel Reverse");
+    AcquisitionWheelsConfig awRevCfg = new AcquisitionWheelsConfig(acquisitionSubsystem, () -> -1.0);
+    acqWheelRevButton.whenHeld(new AcquisitionWheelsCommand(awRevCfg));
+
     //Uptake
-    JoystickButton uptakeButton = new JoystickButton(a_stick, OI.BUTTON_4);
+    JoystickButton uptakeButton = createButton(a_stick, OI.BUTTON_4, "Uptake");
     UptakeConfig uCfg = new UptakeConfig(uptakeSubsystem, () -> 1.0);
     uptakeButton.whenPressed(new UptakeCommand(uCfg));
 
     //Shooting
-    JoystickButton shootButton = new JoystickButton(a_stick, OI.BUTTON_6);
-    ShooterConfig sCfg = new ShooterConfig(shootSubsystem, () -> 1.0);
+    shootSpeedController = new SpeedController(new SpeedControllerConfig(
+      SmartDashboardKeys.SHOOT_SPEED_CTRL, 1.0, createButton(a_stick, OI.BUTTON_10, "Default Shoot Speed"),
+      createButton(a_stick, OI.BUTTON_7, "Shoot Speed Slower"),
+      createButton(a_stick, OI.BUTTON_8, "Shoot Speed Faster")));
+
+    JoystickButton shootButton = createButton(a_stick, OI.BUTTON_6, "Shoot");
+    ShooterConfig sCfg = new ShooterConfig(shootSubsystem, 
+    () -> {
+      Double speedCtrlVal = SmartDashboard.getNumber(SmartDashboardKeys.SHOOT_SPEED_CTRL, 1);
+      return 1.0 / speedCtrlVal;
+    });
     shootButton.whenPressed(new ShooterCommand(sCfg));
 
     //Climbing
@@ -163,7 +188,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     gyro.reset();
     driveSpeedController.reset();
-    // acqSpeedController.reset();
+    shootSpeedController.reset();
   }
 
   @Override

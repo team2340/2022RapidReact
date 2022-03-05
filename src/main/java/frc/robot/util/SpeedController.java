@@ -20,6 +20,13 @@ public class SpeedController {
         Double slowestSpeed;
         Double fastestSpeed;
 
+        public SpeedControllerConfig(String key, Double defSpeed, 
+            JoystickButton setDefault, JoystickButton slowIncr, JoystickButton fastIncr)
+        {
+            this(key, defSpeed, setDefault, slowIncr, null, fastIncr, null,
+                SLOWEST_SPEED, FASTEST_SPEED);
+        }
+
         public SpeedControllerConfig(String key, Double defSpeed, JoystickButton setDefault,
             JoystickButton slowIncr, JoystickButton slowInst,
             JoystickButton fastIncr, JoystickButton fastInst)
@@ -51,70 +58,79 @@ public class SpeedController {
         cfg = config;
         SmartDashboard.putNumber(cfg.key, cfg.defSpeed);
 
-        cfg.setDefault.whenPressed(new CommandBase() {
-            @Override
-            public void initialize() {
-                SmartDashboard.putNumber(cfg.key, cfg.defSpeed);
-            }
+        if(cfg.setDefault != null) {
+            cfg.setDefault.whenPressed(new CommandBase() {
+                @Override
+                public void initialize() {
+                    SmartDashboard.putNumber(cfg.key, cfg.defSpeed);
+                }
 
-            @Override
-            public boolean isFinished() {
-                return true; 
-            }
-        });
+                @Override
+                public boolean isFinished() {
+                    return true; 
+                }
+            });
+        }
     
-        cfg.slowIncr.whenPressed(new CommandBase() {
-            @Override
-            public void initialize() {
-                Double speedCtrlVal = SmartDashboard.getNumber(cfg.key, cfg.defSpeed);
-                speedCtrlVal = Math.min(speedCtrlVal + INCREMENT_AMOUNT, cfg.slowestSpeed);
-                SmartDashboard.putNumber(cfg.key, speedCtrlVal);
-            }
+        if(cfg.slowIncr != null) {
+            cfg.slowIncr.whenPressed(new CommandBase() {
+                @Override
+                public void initialize() {
+                    Double speedCtrlVal = SmartDashboard.getNumber(cfg.key, cfg.defSpeed);
+                    speedCtrlVal = Math.min(speedCtrlVal + INCREMENT_AMOUNT, cfg.slowestSpeed);
+                    SmartDashboard.putNumber(cfg.key, speedCtrlVal);
+                }
 
-            @Override
-            public boolean isFinished() {
-                return true; 
-            }
-        });
+                @Override
+                public boolean isFinished() {
+                    return true; 
+                }
+            });
+        }
 
+        if(cfg.fastIncr != null) {
+            cfg.fastIncr.whenPressed(new CommandBase() {
+                @Override
+                public void initialize() {
+                    Double speedCtrlVal = SmartDashboard.getNumber(cfg.key, cfg.defSpeed);
+                    speedCtrlVal = Math.max(speedCtrlVal - INCREMENT_AMOUNT, cfg.fastestSpeed);
+                    SmartDashboard.putNumber(cfg.key, speedCtrlVal);
+                }
+
+                @Override
+                public boolean isFinished() {
+                    return true; 
+                }
+            });
+        }
         
-        cfg.fastIncr.whenPressed(new CommandBase() {
-            @Override
-            public void initialize() {
-                Double speedCtrlVal = SmartDashboard.getNumber(cfg.key, cfg.defSpeed);
-                speedCtrlVal = Math.max(speedCtrlVal - INCREMENT_AMOUNT, cfg.fastestSpeed);
-                SmartDashboard.putNumber(cfg.key, speedCtrlVal);
-            }
+        if(cfg.slowInst != null) {
+            cfg.slowInst.whenPressed(new CommandBase() {
+                @Override
+                public void initialize() {
+                    SmartDashboard.putNumber(cfg.key, cfg.slowestSpeed);
+                }
 
-            @Override
-            public boolean isFinished() {
-                return true; 
-            }
-        });
-        
-        cfg.slowInst.whenPressed(new CommandBase() {
-            @Override
-            public void initialize() {
-                SmartDashboard.putNumber(cfg.key, cfg.slowestSpeed);
-            }
+                @Override
+                public boolean isFinished() {
+                    return true; 
+                }
+            });
+        }
 
-            @Override
-            public boolean isFinished() {
-                return true; 
-            }
-        });
+        if(cfg.fastInst != null) {
+            cfg.fastInst.whenPressed(new CommandBase() {
+                @Override
+                public void initialize() {
+                    SmartDashboard.putNumber(cfg.key, cfg.fastestSpeed);
+                }
 
-        cfg.fastInst.whenPressed(new CommandBase() {
-            @Override
-            public void initialize() {
-                SmartDashboard.putNumber(cfg.key, cfg.fastestSpeed);
-            }
-
-            @Override
-            public boolean isFinished() {
-                return true; 
-            }
-        });
+                @Override
+                public boolean isFinished() {
+                    return true; 
+                }
+            });
+        }
     }
     
     public void reset() {
