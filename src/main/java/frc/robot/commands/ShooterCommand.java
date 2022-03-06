@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ShootSubsystem;
 
@@ -25,11 +26,13 @@ public class ShooterCommand extends CommandBase{
 
     @Override
     public void initialize() {
-        cfg.shoot.move(cfg.motion.getAsDouble());
     }
 
     @Override
     public void execute() {
+        Double currentSpeed = cfg.motion.getAsDouble();
+        SmartDashboard.putNumber("Shoot Speed %", (currentSpeed/1.0) * 100);
+        cfg.shoot.move(currentSpeed);
     }
 
     @Override

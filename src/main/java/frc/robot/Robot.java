@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -25,6 +26,8 @@ import frc.robot.commands.ClimbCommand.ClimbConfig;
 import frc.robot.commands.JoystickDriveCommand.JoystickDriveConfig;
 import frc.robot.commands.ShooterCommand.ShooterConfig;
 import frc.robot.commands.UptakeCommand.UptakeConfig;
+import frc.robot.commands.autonomous.AutoDriveCommand;
+import frc.robot.commands.autonomous.AutoDriveCommand.AutoDriveConfig;
 import frc.robot.subsystems.AcquisitionSubsystem;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -73,7 +76,7 @@ public class Robot extends TimedRobot {
     acquisitionSubsystem = new AcquisitionSubsystem();
     climbSubsystem = new ClimbSubsystem();
     uptakeSubsystem = new UptakeSubsystem();
-    // cameraSubsystem = new CameraSubsystem(0);
+    cameraSubsystem = new CameraSubsystem(2);
     
     //Drive Controller
     driveSpeedController = new SpeedController(new SpeedControllerConfig(
@@ -98,8 +101,8 @@ public class Robot extends TimedRobot {
       () -> gyro.getAngle());
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(jCfg));
 
-    // JoystickButton cameraButton = createButton(m_stick, OI.BUTTON_4, "Camera Toggle");
-    // cameraButton.whenPressed(new CameraCommand(cameraSubsystem));
+    JoystickButton cameraButton = createButton(m_stick, OI.BUTTON_4, "Camera Toggle");
+    cameraButton.whenPressed(new CameraCommand(cameraSubsystem));
 
     JoystickButton gyroButton = createButton(m_stick, OI.BUTTON_9, "Gyro Reset");
     gyroButton.whenPressed(new CommandBase() {
@@ -125,14 +128,19 @@ public class Robot extends TimedRobot {
     AcquisitionWheelsConfig awCfg = new AcquisitionWheelsConfig(acquisitionSubsystem, () -> 1.0);
     acqWheelButton.whenHeld(new AcquisitionWheelsCommand(awCfg));
     
-    JoystickButton acqWheelRevButton = createButton(a_stick, OI.BUTTON_2, "Arm Wheel Reverse");
-    AcquisitionWheelsConfig awRevCfg = new AcquisitionWheelsConfig(acquisitionSubsystem, () -> -1.0);
-    acqWheelRevButton.whenHeld(new AcquisitionWheelsCommand(awRevCfg));
+    // JoystickButton acqWheelRevButton = createButton(a_stick, OI.BUTTON_2, "Arm Wheel Reverse");
+    // AcquisitionWheelsConfig awRevCfg = new AcquisitionWheelsConfig(acquisitionSubsystem, () -> -1.0);
+    // acqWheelRevButton.whenHeld(new AcquisitionWheelsCommand(awRevCfg));
 
     //Uptake
     JoystickButton uptakeButton = createButton(a_stick, OI.BUTTON_4, "Uptake");
-    UptakeConfig uCfg = new UptakeConfig(uptakeSubsystem, () -> 1.0);
-    uptakeButton.whenPressed(new UptakeCommand(uCfg));
+    UptakeConfig uCfg = new UptakeConfig(uptakeSubsystem, () -> 0.4);
+    uptakeButton.toggleWhenPressed(new UptakeCommand(uCfg));
+
+    JoystickButton uptakeRevButton = createButton(a_stick, OI.BUTTON_2, "Uptake Rev");
+    UptakeConfig uRCfg = new UptakeConfig(uptakeSubsystem, () -> -0.2);
+    uptakeRevButton.toggleWhenPressed(new UptakeCommand(uRCfg));
+    
 
     //Shooting
     shootSpeedController = new SpeedController(new SpeedControllerConfig(
@@ -146,7 +154,7 @@ public class Robot extends TimedRobot {
       Double speedCtrlVal = SmartDashboard.getNumber(SmartDashboardKeys.SHOOT_SPEED_CTRL, 1);
       return 1.0 / speedCtrlVal;
     });
-    shootButton.whenPressed(new ShooterCommand(sCfg));
+    shootButton.toggleWhenPressed(new ShooterCommand(sCfg));
 
     //Climbing
     ClimbConfig cCfg = new ClimbConfig(climbSubsystem, () -> -a_stick.getThrottle());
@@ -164,24 +172,23 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
   }
 
+  Command autoCommand = null;
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    switch (m_autoSelected) {
+      default:
+        AutoDriveConfig adConfig = new AutoDriveConfig(driveSubsystem);
+        autoCommand = new AutoDriveCommand(adConfig);
+        break;
+    }
   }
 
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
+    autoCommand.schedule();
   }
 
   @Override

@@ -5,10 +5,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class SpeedController {
-    private static final Double INCREMENT_AMOUNT = 0.2;
     public static class SpeedControllerConfig {
         private static final Double SLOWEST_SPEED = 4.0;
         private static final Double FASTEST_SPEED = 1.0;
+        private static final Double INCREMENT_AMOUNT = 0.2;
         
         String key;
         Double defSpeed;
@@ -19,6 +19,7 @@ public class SpeedController {
         JoystickButton fastInst;
         Double slowestSpeed;
         Double fastestSpeed;
+        Double incrementAmt;
 
         public SpeedControllerConfig(String key, Double defSpeed, 
             JoystickButton setDefault, JoystickButton slowIncr, JoystickButton fastIncr)
@@ -40,6 +41,15 @@ public class SpeedController {
             JoystickButton fastIncr, JoystickButton fastInst,
             Double slowestSpeed, Double fastestSpeed)
         {
+            this(key, defSpeed, setDefault, slowIncr, slowInst, fastIncr, fastInst,
+                slowestSpeed, fastestSpeed, INCREMENT_AMOUNT);
+        }
+
+        public SpeedControllerConfig(String key, Double defSpeed, JoystickButton setDefault,
+            JoystickButton slowIncr, JoystickButton slowInst,
+            JoystickButton fastIncr, JoystickButton fastInst,
+            Double slowestSpeed, Double fastestSpeed, Double increment)
+        {
             this.key = key;
             this.defSpeed = defSpeed;
             this.setDefault = setDefault;
@@ -49,6 +59,7 @@ public class SpeedController {
             this.fastInst = fastInst;
             this.slowestSpeed = slowestSpeed;
             this.fastestSpeed = fastestSpeed;
+            this.incrementAmt = increment;
         }    
     }
 
@@ -77,7 +88,7 @@ public class SpeedController {
                 @Override
                 public void initialize() {
                     Double speedCtrlVal = SmartDashboard.getNumber(cfg.key, cfg.defSpeed);
-                    speedCtrlVal = Math.min(speedCtrlVal + INCREMENT_AMOUNT, cfg.slowestSpeed);
+                    speedCtrlVal = Math.min(speedCtrlVal + cfg.incrementAmt, cfg.slowestSpeed);
                     SmartDashboard.putNumber(cfg.key, speedCtrlVal);
                 }
 
@@ -93,7 +104,7 @@ public class SpeedController {
                 @Override
                 public void initialize() {
                     Double speedCtrlVal = SmartDashboard.getNumber(cfg.key, cfg.defSpeed);
-                    speedCtrlVal = Math.max(speedCtrlVal - INCREMENT_AMOUNT, cfg.fastestSpeed);
+                    speedCtrlVal = Math.max(speedCtrlVal - cfg.incrementAmt, cfg.fastestSpeed);
                     SmartDashboard.putNumber(cfg.key, speedCtrlVal);
                 }
 

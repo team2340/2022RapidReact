@@ -11,6 +11,8 @@ public class AcquisitionSubsystem extends SubsystemBase {
         public AcquisitionSubsystem() {
             wheels = new WPI_TalonSRX(OI.ACQ_WHEEL_CTRL_ID);
             upDown = new WPI_TalonSRX(OI.ACQ_MOTION_CTRL_ID);
+
+            upDown.setInverted(true);
         }
     
         public void wheels(Double val){
