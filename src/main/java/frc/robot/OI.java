@@ -26,6 +26,7 @@ public class OI {
     public static final int BACK_RIGHT_WHEEL_CTRL_ID = 5;
     //Climb
     public static final int CLIMB_CTRL_ID = 6;
+    public static final int CLIMB2_CTRL_ID = 7;
     //Acquisition
     public static final int ACQ_WHEEL_CTRL_ID = 8;
     public static final int ACQ_MOTION_CTRL_ID = 9;

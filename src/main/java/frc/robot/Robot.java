@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AcquisitionMotionCommand;
 import frc.robot.commands.AcquisitionWheelsCommand;
@@ -26,8 +28,14 @@ import frc.robot.commands.ClimbCommand.ClimbConfig;
 import frc.robot.commands.JoystickDriveCommand.JoystickDriveConfig;
 import frc.robot.commands.ShooterCommand.ShooterConfig;
 import frc.robot.commands.UptakeCommand.UptakeConfig;
+import frc.robot.commands.autonomous.AutoArmCommand;
 import frc.robot.commands.autonomous.AutoDriveCommand;
+import frc.robot.commands.autonomous.AutoDriveWithTimeCommand;
+import frc.robot.commands.autonomous.AutoShootCommand;
+import frc.robot.commands.autonomous.AutoArmCommand.AutoArmConfig;
 import frc.robot.commands.autonomous.AutoDriveCommand.AutoDriveConfig;
+import frc.robot.commands.autonomous.AutoDriveWithTimeCommand.AutoDriveWithTimeConfig;
+import frc.robot.commands.autonomous.AutoShootCommand.AutoShootConfig;
 import frc.robot.subsystems.AcquisitionSubsystem;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -39,8 +47,10 @@ import frc.robot.util.SpeedController;
 import frc.robot.util.SpeedController.SpeedControllerConfig;
 
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
+  private static final String autoNone = "None";
+  private static final String auto1 = "Auto 1";
+  private static final String auto2 = "Auto 2";
+  private static final String auto3 = "Auto 3";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
@@ -119,7 +129,7 @@ public class Robot extends TimedRobot {
       acquisitionSubsystem,
       () -> {
         Double speedCtrlVal = SmartDashboard.getNumber(SmartDashboardKeys.ACQ_SPEED_CTRL, 1);
-        return -a_stick.getY() / speedCtrlVal;
+        return a_stick.getY() / speedCtrlVal;
       });
     acquisitionSubsystem.setDefaultCommand(new AcquisitionMotionCommand(amCfg));
 
@@ -157,12 +167,14 @@ public class Robot extends TimedRobot {
     shootButton.toggleWhenPressed(new ShooterCommand(sCfg));
 
     //Climbing
-    ClimbConfig cCfg = new ClimbConfig(climbSubsystem, () -> -a_stick.getThrottle());
+    ClimbConfig cCfg = new ClimbConfig(climbSubsystem, () -> a_stick.getThrottle());
     climbSubsystem.setDefaultCommand(new ClimbCommand(cCfg));
     
     //Autonomous Stuff
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.setDefaultOption("None", autoNone);
+    m_chooser.addOption("Auto 1", auto1);
+    m_chooser.addOption("Auto 2", auto2);
+    m_chooser.addOption("Auto 3", auto3);
     SmartDashboard.putData("Auto choices", m_chooser);
   }
 
@@ -176,23 +188,59 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    m_autoSelected = SmartDashboard.getString("Auto Selector", autoNone);
     System.out.println("Auto selected: " + m_autoSelected);
+    
     switch (m_autoSelected) {
-      default:
-        AutoDriveConfig adConfig = new AutoDriveConfig(driveSubsystem);
-        autoCommand = new AutoDriveCommand(adConfig);
+      case auto1:
+      {
+        autoCommand = new SequentialCommandGroup(
+          new ParallelCommandGroup(
+            new AutoDriveWithTimeCommand(new AutoDriveWithTimeConfig(driveSubsystem, 2000, -0.2)),
+            new AutoArmCommand(new AutoArmConfig(acquisitionSubsystem))
+          ),
+          new AutoShootCommand(new AutoShootConfig(shootSubsystem, uptakeSubsystem, () -> 20.0))
+        );
         break;
+      }
+      case auto2:
+      {
+        autoCommand = new SequentialCommandGroup(
+          new ParallelCommandGroup(
+            new AutoDriveWithTimeCommand(new AutoDriveWithTimeConfig(driveSubsystem, 2000, -0.2)),
+            new AutoArmCommand(new AutoArmConfig(acquisitionSubsystem))
+          ),
+          new AutoShootCommand(new AutoShootConfig(shootSubsystem, uptakeSubsystem, () -> 20.0))
+        );
+        break;
+      }
+      case auto3:
+      {
+        autoCommand = new SequentialCommandGroup(
+          new ParallelCommandGroup(
+            new AutoDriveWithTimeCommand(new AutoDriveWithTimeConfig(driveSubsystem, 2000, -0.2)),
+            new AutoArmCommand(new AutoArmConfig(acquisitionSubsystem))
+          ),
+          new AutoShootCommand(new AutoShootConfig(shootSubsystem, uptakeSubsystem, () -> 20.0))
+        );
+        break;
+      }
+      default:
+      {
+        autoCommand = null;
+        break;
+      }
     }
+    if(autoCommand != null) autoCommand.schedule();
   }
 
   @Override
   public void autonomousPeriodic() {
-    autoCommand.schedule();
   }
 
   @Override
   public void teleopInit() {
+    if(autoCommand != null) autoCommand.cancel();
     gyro.reset();
     driveSpeedController.reset();
     shootSpeedController.reset();
@@ -200,11 +248,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() 
+  {
+    if(autoCommand != null) autoCommand.cancel();
+  }
 
   @Override
   public void disabledPeriodic() {}
