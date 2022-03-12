@@ -90,8 +90,8 @@ public class Robot extends TimedRobot {
     //Drive Controller
     driveSpeedController = new SpeedController(new SpeedControllerConfig(
       SmartDashboardKeys.DRIVE_SPEED_CTRL, 2.0, createButton(m_stick, OI.BUTTON_10, "Drive Default Speed"),
-      createButton(m_stick, OI.BUTTON_5, "Drive Speed Slow"), createButton(m_stick, OI.BUTTON_7, "Drive Speed Full Slow"),
-      createButton(m_stick, OI.BUTTON_6, "Drive Speed Full"), createButton(m_stick, OI.BUTTON_8, "Drive Speed Full Fast")));
+      createButton(m_stick, OI.BUTTON_5, "Drive Speed Slow"), createButton(m_stick, OI.BUTTON_9, "Drive Speed Full Slow"),
+      createButton(m_stick, OI.BUTTON_6, "Drive Speed Fast"), createButton(m_stick, OI.BUTTON_10, "Drive Speed Full Fast")));
 
     JoystickDriveConfig jCfg = new JoystickDriveConfig(
       driveSubsystem,
@@ -128,11 +128,15 @@ public class Robot extends TimedRobot {
     JoystickButton cameraButton = createButton(m_stick, OI.BUTTON_4, "Camera Toggle");
     cameraButton.whenPressed(new CameraCommand(cameraSubsystem));
 
-    JoystickButton gyroButton = createButton(m_stick, OI.BUTTON_9, "Gyro Reset");
+    JoystickButton gyroButton = createButton(m_stick, OI.BUTTON_7, "Gyro Reset");
     gyroButton.whenPressed(new CommandBase() {
       @Override
       public void initialize() {
         gyro.reset();
+      }
+
+      public boolean isFinished() {
+        return true;
       }
     });
 
@@ -150,11 +154,11 @@ public class Robot extends TimedRobot {
     //Arm Wheels
     JoystickButton acqWheelButton = createButton(a_stick, OI.BUTTON_1, "Arm Wheel Forward");
     AcquisitionWheelsConfig awCfg = new AcquisitionWheelsConfig(acquisitionSubsystem, () -> 1.0);
-    acqWheelButton.whenHeld(new AcquisitionWheelsCommand(awCfg));
+    acqWheelButton.toggleWhenPressed(new AcquisitionWheelsCommand(awCfg));
     
     // JoystickButton acqWheelRevButton = createButton(a_stick, OI.BUTTON_2, "Arm Wheel Reverse");
     // AcquisitionWheelsConfig awRevCfg = new AcquisitionWheelsConfig(acquisitionSubsystem, () -> -1.0);
-    // acqWheelRevButton.whenHeld(new AcquisitionWheelsCommand(awRevCfg));
+    // acqWheelRevButton.toggleWhenPressed(new AcquisitionWheelsCommand(awRevCfg));
 
     //Uptake
     JoystickButton uptakeButton = createButton(a_stick, OI.BUTTON_4, "Uptake");
@@ -180,10 +184,16 @@ public class Robot extends TimedRobot {
     });
     shootButton.toggleWhenPressed(new ShooterCommand(sCfg));
 
-    createButton(a_stick, OI.BUTTON_3, "Set Shoot Speed").whenPressed(
+    createButton(a_stick, OI.BUTTON_3, "Speed - Low Goal").whenPressed(
       new ShooterCommand(new ShooterConfig(shootSubsystem, 
       () -> {
         return 0.333;
+      })));
+
+    createButton(a_stick, OI.BUTTON_9, "Speed - High Goal").whenPressed(
+      new ShooterCommand(new ShooterConfig(shootSubsystem, 
+      () -> {
+        return 0.55;
       })));
 
     //Climbing
