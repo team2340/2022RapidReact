@@ -1,7 +1,5 @@
 package frc.robot.commands.autonomous;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.AcquisitionSubsystem;
 
@@ -22,7 +20,7 @@ public class AutoArmCommand extends CommandBase {
     }
 
     long startTime = 0;
-    long END_TIME_DELAY = 5000;
+    long END_TIME_DELAY = 14000;
      @Override
     public void initialize() {
         startTime = System.currentTimeMillis();
@@ -40,5 +38,9 @@ public class AutoArmCommand extends CommandBase {
             return true;
         }
         return false;
+    }
+
+    public void end() {
+        cfg.acqSubsystem.motion(0.);
     }
 }

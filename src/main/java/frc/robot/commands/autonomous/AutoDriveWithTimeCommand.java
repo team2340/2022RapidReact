@@ -1,9 +1,5 @@
 package frc.robot.commands.autonomous;
 
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -46,5 +42,9 @@ public class AutoDriveWithTimeCommand extends CommandBase {
             return true;
         }
         return false;
+    }
+
+    public void end() {
+        cfg.driveSubsystem.drive(0.0, 0.0, 0.0);
     }
 }

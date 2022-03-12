@@ -29,11 +29,9 @@ import frc.robot.commands.JoystickDriveCommand.JoystickDriveConfig;
 import frc.robot.commands.ShooterCommand.ShooterConfig;
 import frc.robot.commands.UptakeCommand.UptakeConfig;
 import frc.robot.commands.autonomous.AutoArmCommand;
-import frc.robot.commands.autonomous.AutoDriveCommand;
 import frc.robot.commands.autonomous.AutoDriveWithTimeCommand;
 import frc.robot.commands.autonomous.AutoShootCommand;
 import frc.robot.commands.autonomous.AutoArmCommand.AutoArmConfig;
-import frc.robot.commands.autonomous.AutoDriveCommand.AutoDriveConfig;
 import frc.robot.commands.autonomous.AutoDriveWithTimeCommand.AutoDriveWithTimeConfig;
 import frc.robot.commands.autonomous.AutoShootCommand.AutoShootConfig;
 import frc.robot.subsystems.AcquisitionSubsystem;
@@ -51,6 +49,7 @@ public class Robot extends TimedRobot {
   private static final String auto1 = "Auto 1";
   private static final String auto2 = "Auto 2";
   private static final String auto3 = "Auto 3";
+  private final static double DEADBAND = 0.1;
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
@@ -98,15 +97,30 @@ public class Robot extends TimedRobot {
       driveSubsystem,
       () -> {
         Double speedCtrlVal = SmartDashboard.getNumber(SmartDashboardKeys.DRIVE_SPEED_CTRL, 1);
-        return m_stick.getX() / speedCtrlVal;
+        double x = m_stick.getX();
+        if (x < 0 - DEADBAND || x > 0 + DEADBAND) {
+          return x / speedCtrlVal;
+        } else {
+          return 0;
+        }
       },
       () -> {
         Double speedCtrlVal = SmartDashboard.getNumber(SmartDashboardKeys.DRIVE_SPEED_CTRL, 1);
-        return m_stick.getY() / speedCtrlVal;
+        double y = m_stick.getY();
+        if (y < 0 - DEADBAND || y > 0 + DEADBAND) {
+          return y / speedCtrlVal;
+        } else {
+          return 0;
+        }
       },
       () -> {
         Double speedCtrlVal = SmartDashboard.getNumber(SmartDashboardKeys.DRIVE_SPEED_CTRL, 1);
-        return m_stick.getZ() / speedCtrlVal;
+        double z = m_stick.getRawAxis(4);
+        if (z < 0 - DEADBAND || z > 0 + DEADBAND) {
+          return z / speedCtrlVal;
+        } else {
+          return 0;
+        }
       },
       () -> gyro.getAngle());
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(jCfg));
@@ -166,6 +180,12 @@ public class Robot extends TimedRobot {
     });
     shootButton.toggleWhenPressed(new ShooterCommand(sCfg));
 
+    createButton(a_stick, OI.BUTTON_3, "Set Shoot Speed").whenPressed(
+      new ShooterCommand(new ShooterConfig(shootSubsystem, 
+      () -> {
+        return 0.333;
+      })));
+
     //Climbing
     ClimbConfig cCfg = new ClimbConfig(climbSubsystem, () -> a_stick.getThrottle());
     climbSubsystem.setDefaultCommand(new ClimbCommand(cCfg));
@@ -188,7 +208,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
-    m_autoSelected = SmartDashboard.getString("Auto Selector", autoNone);
     System.out.println("Auto selected: " + m_autoSelected);
     
     switch (m_autoSelected) {
@@ -196,32 +215,41 @@ public class Robot extends TimedRobot {
       {
         autoCommand = new SequentialCommandGroup(
           new ParallelCommandGroup(
-            new AutoDriveWithTimeCommand(new AutoDriveWithTimeConfig(driveSubsystem, 2000, -0.2)),
-            new AutoArmCommand(new AutoArmConfig(acquisitionSubsystem))
-          ),
-          new AutoShootCommand(new AutoShootConfig(shootSubsystem, uptakeSubsystem, () -> 20.0))
+            new SequentialCommandGroup(
+              new AutoDriveWithTimeCommand(new AutoDriveWithTimeConfig(driveSubsystem, 3500, -0.2)),
+              new AutoShootCommand(
+                  new AutoShootConfig(acquisitionSubsystem, shootSubsystem, uptakeSubsystem, () -> 50.0))
+            ),
+            new AutoArmCommand(new AutoArmConfig(acquisitionSubsystem)) 
+          )       
         );
-        break;
+        break; 
       }
-      case auto2:
+      case auto2: //High Goal
       {
         autoCommand = new SequentialCommandGroup(
           new ParallelCommandGroup(
-            new AutoDriveWithTimeCommand(new AutoDriveWithTimeConfig(driveSubsystem, 2000, -0.2)),
-            new AutoArmCommand(new AutoArmConfig(acquisitionSubsystem))
-          ),
-          new AutoShootCommand(new AutoShootConfig(shootSubsystem, uptakeSubsystem, () -> 20.0))
+            new SequentialCommandGroup(
+              new AutoDriveWithTimeCommand(new AutoDriveWithTimeConfig(driveSubsystem, 3500, -0.2)),
+              new AutoShootCommand(
+                  new AutoShootConfig(acquisitionSubsystem, shootSubsystem, uptakeSubsystem, () -> 50.0))
+            ),
+            new AutoArmCommand(new AutoArmConfig(acquisitionSubsystem)) 
+          )       
         );
         break;
       }
-      case auto3:
+      case auto3: //Low goal
       {
         autoCommand = new SequentialCommandGroup(
           new ParallelCommandGroup(
-            new AutoDriveWithTimeCommand(new AutoDriveWithTimeConfig(driveSubsystem, 2000, -0.2)),
-            new AutoArmCommand(new AutoArmConfig(acquisitionSubsystem))
-          ),
-          new AutoShootCommand(new AutoShootConfig(shootSubsystem, uptakeSubsystem, () -> 20.0))
+            new SequentialCommandGroup(
+              new AutoDriveWithTimeCommand(new AutoDriveWithTimeConfig(driveSubsystem, 3500, -0.2)),
+              new AutoShootCommand(
+                  new AutoShootConfig(acquisitionSubsystem, shootSubsystem, uptakeSubsystem, () -> 35.0))
+            ),
+            new AutoArmCommand(new AutoArmConfig(acquisitionSubsystem)) 
+          )       
         );
         break;
       }
