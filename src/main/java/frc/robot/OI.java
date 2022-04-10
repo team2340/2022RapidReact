@@ -29,9 +29,10 @@ public class OI {
     public static final int CLIMB2_CTRL_ID = 7;
     //Acquisition
     public static final int ACQ_WHEEL_CTRL_ID = 8;
-    public static final int ACQ_MOTION_CTRL_ID = 9;
-
+    
     /*SparkMAX IDs*/
+    //Acquisition
+    public static final int ACQ_MOTION_CTRL_ID = 9;
     //Shoot
     public static final int SHOOT_CTRL_ID = 11;
     public static final int UPTAKE_CTRL_ID = 12;
